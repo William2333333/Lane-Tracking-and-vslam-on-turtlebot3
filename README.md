@@ -170,7 +170,7 @@ class LaneDetector:
         # Initialize detectors and other variables
         self.detect_lane = DetectLane()
         self.detect_lane.sub_image_type = 'raw'
-        self.q = [0, 0, 0]  # 机器人位姿初始化
+        self.q = [0, 0, 0]  # Robot pose initialization
 
     def image_callback(self, image_msg):
         try:
@@ -226,7 +226,7 @@ class LaneDetector:
             # print("Yellow lane coordinates:", yellow_coords)
             # print("White lane coordinates:", white_coords)
 
-            # 数据简化
+            # Data reduction
             N = 100
             simplified_white_coords = white_coords[::N] if white_coords else []
             simplified_yellow_coords = yellow_coords[::N] if yellow_coords else []
@@ -244,8 +244,8 @@ class LaneDetector:
 
         # Convert image coordinates to ground coordinates
         points_real_white = np.linalg.inv(K) @ (R @ points_img_white.T + t)
-        points_real_white /= points_real_white[2, :]  # 齐次坐标归一化
-        points_real_white = points_real_white.T  # 转置为 N x 3
+        points_real_white /= points_real_white[2, :]  # Normalization of homogeneous coordinates
+        points_real_white = points_real_white.T  
 
         points_real_yellow = np.linalg.inv(K) @ (R @ points_img_yellow.T + t)
         points_real_yellow /= points_real_yellow[2, :]
@@ -265,7 +265,7 @@ class LaneDetector:
         points_robot_yellow = (T_world_to_robot @ points_real_yellow.T).T
         
         slam_pose = self.get_global_pose()
-        x_s, y_s, theta_s = slam_pose  # 来自 SLAM 系统
+        x_s, y_s, theta_s = slam_pose  
 
         # SLAM map coordinate transformation matrix
         T_robot_to_map = np.array([
