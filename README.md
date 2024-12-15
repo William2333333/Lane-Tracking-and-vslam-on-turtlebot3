@@ -317,3 +317,77 @@ if __name__ == "__main__":
     ins = LaneDetector()
     ins.main()
 ```
+### 4.Build the map
+use the slam to build the map
+```
+roslaunch turtlebot3_slam turtlebots_slam.launch
+```
+### 5.Update the map
+```
+import cv2
+import numpy as np
+
+map_path = "~/map_new.pgm"
+map_image = cv2.imread(map_path, cv2.IMREAD_GRAYSCALE)
+
+def read_points_from_txt(filename):
+    white_lane_points = []
+    yellow_lane_points = []
+
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+      
+        white_points_started = False
+        yellow_points_started = False
+        for line in lines:
+            line = line.strip()  
+            if line == "White lane points:":
+                white_points_started = True
+                continue
+            elif line == "Yellow lane points:":
+                yellow_points_started = True
+                continue
+
+            if white_points_started and line:
+                x, y = map(float, line.split(","))
+                white_lane_points.append((x, y))
+
+            if yellow_points_started and line:
+                x, y = map(float, line.split(","))
+                yellow_lane_points.append((x, y))
+
+    return white_lane_points, yellow_lane_points
+
+
+
+filename = "/home/yirenqiu/turtlebot3_ws/points.txt"  
+white_points, yellow_points = read_points_from_txt(filename)
+
+np_white_points = np.array(white_points)
+np_yellow_points = np.array(yellow_points)
+# print(size(white_points))
+
+
+x_white = []
+y_white = []
+
+x_white = np_white_points[:,0]
+y_white = np_white_points[:,1]
+
+x_yellow = []
+y_yellow= []
+
+x_yellow = np_yellow_points[:,0]
+y_yellow = np_yellow_points[:,1]
+
+for i in range(len(x_white)):
+    map_image[int(y_white[i]),int(x_white[i])] = 0
+    
+for i in range(len(y_yellow)):
+    map_image[int(y_yellow[i]),int(x_yellow[i])] = 0
+    
+cv2.imwrite("~/202412152035.pgm", map_image)
+
+print("202412152035.pgm")
+```
