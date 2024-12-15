@@ -140,7 +140,7 @@ Add this code into the maskWhiteLane function and return white_coords in the end
         else:
             white_coords = []
 ```
-### 3.Create a node file
+### 3.Create a node file (coordinates__change_new.py)
 ```
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
